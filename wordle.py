@@ -1,63 +1,47 @@
-import random
+from random import choice
+from tabulate import tabulate
+import tkinter as tk
 
-# ANSI color codes
-GREEN = "\033[92m"  # Correct letter and correct position (*)
-YELLOW = "\033[93m"  # Correct letter but wrong position (+)
-RED = "\033[91m"  # Incorrect letter (-)
-RESET = "\033[0m"  # Reset color to default
+def get_input(words):
+    while True:
+        guess = input("Enter the word: ").replace(" ", "").lower()
+        if len(guess) == 5 and isinstance(guess, str) and guess in words:
+            return guess
 
-def generate_word():
-    # A small sample list of 5-letter words
-    word_list = ["apple", "grape", "pearl", "stone", "house", "plant"]
-    return random.choice(word_list)
 
-def get_feedback(guess, target_word):
-    feedback = [""] * 5
-    used_indices = set()
 
-    # First, mark the correct letters in the correct position
-    for i in range(5):
-        if guess[i] == target_word[i]:
-            feedback[i] = GREEN + guess[i] + RESET
-            used_indices.add(i)
+def wordle(word, words):
+    combo = []
+    for i in range(6):
+        row = []
+        guess = get_input(words)
+        if guess == word:
+            return i + 1
+        for j in range(5):
+            if guess[j] == word[j]:
+                row.append(f"\033[97;102m {guess[j]} \033[0m")
+            elif guess[j] in word:
+                row.append(f"\033[91;103m {guess[j]} \033[0m")
+            else:
+                row.append(f"\033[90;107m {guess[j]} \033[0m")
+        combo.append(row)
+        print(tabulate(combo))
+    print(f"Word: {word} ")
+    return False
 
-    # Then, mark the correct letters in the wrong position
-    for i in range(5):
-        if feedback[i] == "" and guess[i] in target_word:
-            for j in range(5):
-                if guess[i] == target_word[j] and j not in used_indices:
-                    feedback[i] = YELLOW + guess[i] + RESET
-                    used_indices.add(j)
-                    break
 
-    # Any remaining letters are incorrect
-    for i in range(5):
-        if feedback[i] == "":
-            feedback[i] = RED + guess[i] + RESET
+def main():
+    with open("words.txt", "r") as file:
+        words = [word.strip() for word in file.readlines()]
+       
 
-    return "".join(feedback)
-
-def play_wordle():
-    target_word = generate_word()
-    attempts = 6
-
-    print("Welcome to Wordle! Guess the 5-letter word.")
+    word = choice(words)
+    chance = wordle(word, words)
+    if chance:
+        print(f"You find the word in {chance} tries")
     
-    for _ in range(attempts):
-        guess = input("Enter your guess: ").lower()
 
-        if len(guess) != 5:
-            print("Please enter a 5-letter word.")
-            continue
 
-        feedback = get_feedback(guess, target_word)
-        print(f"Feedback: {feedback}")
 
-        if guess == target_word:
-            print("Congratulations! You guessed the word correctly.")
-            return
-
-    print(f"Sorry, you've run out of attempts. The word was: {target_word}")
-
-if __name__ == "__main__":
-    play_wordle()
+if __name__=="__main__":
+    main()
