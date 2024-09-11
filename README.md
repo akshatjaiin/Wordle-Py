@@ -45,9 +45,11 @@ Enter the word: slate
 |  c  |  r  |  a  |  n  |  e  |
 |  s  |  l  |  a  |  t  |  e  |
 ------------------
-
+```
 Word: grace
 You find the word in 4 tries
+![image](https://github.com/user-attachments/assets/89339bbb-9b81-42d3-a272-aa986046047b)
+
 💡 How It Works
 The game uses the random.choice() function to select a word from the words.txt file.
 Players input a 5-letter word, which is validated against the word list.
